@@ -1,6 +1,6 @@
 #### Introduction
 
-This is an API testing framework for Codemonstres application. It is written in Java with REST assured, TestNG and Maven.
+This is an API testing framework for Codemonstres application https://github.com/eMerchantPay/codemonsters_api_full#authentication. It is written in Java with REST assured, TestNG and Maven.
 
 #### Prerequisits 
 
