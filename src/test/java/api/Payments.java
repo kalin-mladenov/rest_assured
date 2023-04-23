@@ -1,5 +1,8 @@
 package api;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import io.restassured.response.Response;
 import pojo.*;
 import utils.ConfigFile;
@@ -15,10 +18,13 @@ public class Payments {
 
     static String uniqueId;
     static String voidUniqueId;
+    static String paymentTransaction;
+
     /**
-     *  Creates payment_transaction json object from PaymentTransaction POJO class
+     * Creates payment_transaction json object from PaymentTransaction POJO class
      */
-    static PaymentTransaction payment_transaction = new PaymentTransaction(new PaymentTransaction__1(
+
+    static PaymentTransaction payment = new PaymentTransaction(
             "4200000000000000",
             "123",
             "06/2019",
@@ -27,63 +33,95 @@ public class Payments {
             "sale",
             "Panda Panda",
             "panda@example.com",
-            "Panda Street, China"));
+            "Panda Street, China"
+    );
+    static ObjectMapper mapper = new ObjectMapper();
+
+
+    static {
+        try {
+            paymentTransaction = mapper.enable(SerializationFeature.WRAP_ROOT_VALUE).writeValueAsString(payment);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 
     /**
      * Sends POST request to the configured endpoint with Basic authentication. Expects status code 200
      */
-    public static void validTransaction() {
+    public static PaymentResponse paymentResponse() {
 
-        given()
-                .auth().basic(user, pass)
-                .body(payment_transaction)
-                .when()
-                .post(endpoint)
-                .then()
-                .assertThat().statusCode(200);
-    }
-
-    /** /
-     * Sends POST request to the configured endpoint with Basic authentication to make a transaction.
-     * Get the value of "unique_id" key from the json response.
-     * Sends POST request to the configured endpoint with Basic authentication to void the transaction above.
-     * Asserts the parameters json response below
-     * @param key the key from the json response that has to be asserted
-     * @param value the expected value of the key above that has to be asserted
-     */
-    public static void voidTransaction(String key, String value) {
 
         Response response =
                 given()
                         .auth().basic(user, pass)
-                        .body(payment_transaction)
+                        .body(paymentTransaction)
                         .when()
                         .post(endpoint);
         response
                 .then();
-        PaymentResponse responseJson = response.getBody().as(PaymentResponse.class);
-                uniqueId = responseJson.getUnique_id();
+        return response.getBody().as(PaymentResponse.class);
+//        given()
+//                .auth().basic(user, pass)
+//                .body(paymentTransaction)
+//                .when()
+//                .post(endpoint)
+//                .then()
+//                .assertThat().statusCode(200);
+    }
+    public static void validPaymentTransaction(){
+        paymentResponse();
+        given().then().body("message", equalTo("Your transaction has been approved."));
+    }
+    /**
+     * /
+     * Sends POST request to the configured endpoint with Basic authentication to make a transaction.
+     * Get the value of "unique_id" key from the json response.
+     * Sends POST request to the configured endpoint with Basic authentication to void the transaction above.
+     * Asserts the parameters json response below
+     *
+//     * @param key   the key from the json response that has to be asserted
+//     * @param value the expected value of the key above that has to be asserted
+     */
+    public static VoidResponse voidTransactionResponse() throws JsonProcessingException {
 
-        VoidTransaction void_transaction = new VoidTransaction(new VoidTransaction__1(
+
+                    uniqueId = paymentResponse().getUnique_id();
+        ObjectMapper mapper = new ObjectMapper();
+                   VoidTransaction voidT = new VoidTransaction(
                 uniqueId,
-                "void"));
-                given()
+                "void");
+
+        String voidTransaction;
+        voidTransaction =  mapper.enable(SerializationFeature.WRAP_ROOT_VALUE).writeValueAsString(voidT);
+        Response response =
+        given()
                 .auth().basic(user, pass)
-                .body(void_transaction)
+                .body(voidTransaction)
                 .when()
-                .post(endpoint)
-                .then().body(key, equalTo(value));
+                .post(endpoint);
+              response
+                      .then();
+
+        return response.getBody().as(VoidResponse.class);
+//                .then().body(key, equalTo(value));
 
     }
+    public static void voidPaymentTransaction(String key, String value) throws JsonProcessingException {
+       voidTransactionResponse();
+        given()
+        .then().body(key, equalTo(value));
+    }
 
-    /** Sends POST request to the configured endpoint with valid username and blank password for Basic authentication.
+    /**
+     * Sends POST request to the configured endpoint with valid username and blank password for Basic authentication.
      * Expects status code 401
-     *
      */
     public static void invalidAuthentication() {
         given()
                 .auth().basic(user, "")
-                .body(payment_transaction)
+                .body(paymentTransaction)
                 .when()
                 .post(endpoint)
                 .then()
@@ -95,56 +133,51 @@ public class Payments {
      * Expects status code 422
      */
 
-    public static void nonExistingId() {
-        VoidTransaction void_transaction = new VoidTransaction(new VoidTransaction__1(
+    public static void nonExistingId() throws JsonProcessingException {
+
+        ObjectMapper mapper = new ObjectMapper();
+        VoidTransaction voidT = new VoidTransaction(
                 "",
-                "void"));
+                "void");
+
+        String nonExistingId;
+        nonExistingId =  mapper.enable(SerializationFeature.WRAP_ROOT_VALUE).writeValueAsString(voidT);
+
         given()
                 .auth().basic(user, pass)
-                .body(void_transaction)
+                .body(nonExistingId)
                 .when()
                 .post(endpoint)
                 .then()
                 .assertThat().statusCode(422);
     }
-/**
- * Sends POST request to the configured endpoint with Basic authentication to make a transaction.
- * Get the value of "unique_id" key from the json response.
- * Sends POST request to the configured endpoint with Basic authentication to void the transaction above.
- * Sends again the same POST request
- * Expects status code 422
- */
-    public static void existingVoidTransaction() {
-        Response response =
-                given()
-                        .auth().basic(user, pass)
-                        .body(payment_transaction)
-                        .when()
-                        .post(endpoint);
-        response
-                .then();
-        PaymentResponse responseJson = response.getBody().as(PaymentResponse.class);
-        uniqueId = responseJson.getUnique_id();
 
-        VoidTransaction void_transaction = new VoidTransaction(new VoidTransaction__1(
-                uniqueId,
-                "void"));
-        Response voidResponse =
+    /**
+     * Sends POST request to the configured endpoint with Basic authentication to make a transaction.
+     * Get the value of "unique_id" key from the json response.
+     * Sends POST request to the configured endpoint with Basic authentication to void the transaction above.
+     * Sends again the same POST request
+     * Expects status code 422
+     */
+    public static void existingVoidTransaction() throws JsonProcessingException {
+
+        voidUniqueId = voidTransactionResponse().getUnique_id();
+        ObjectMapper mapper = new ObjectMapper();
+        VoidTransaction voidT = new VoidTransaction(
+                voidUniqueId,
+                "void");
+
+        String voidTransaction;
+        voidTransaction =  mapper.enable(SerializationFeature.WRAP_ROOT_VALUE).writeValueAsString(voidT);
+
                 given()
                         .auth().basic(user, pass)
-                        .body(void_transaction)
+                        .body(voidTransaction)
                         .when()
-                        .post(endpoint);
-        voidResponse
-                .then();
-        VoidResponse voidJson = voidResponse.getBody().as(VoidResponse.class);
-        voidUniqueId = voidJson.getUnique_id();
-        given()
-                .auth().basic(user, pass)
-                .body(void_transaction)
-                .when()
-                .post(endpoint)
+                        .post(endpoint)
+
                 .then()
+
                 .assertThat().statusCode(422);
     }
 }
