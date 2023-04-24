@@ -1,30 +1,44 @@
 package pojo;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonRootName;
+
+@JsonRootName(value = "payment_transaction")
 public class VoidTransaction {
 
-    private VoidTransaction__1 payment_transaction;
 
-    /**
-     * No args constructor for use in serialization
-     *
-     */
-    public VoidTransaction() {
+        @JsonProperty("reference_id")
+        private String referenceId;
+        @JsonProperty("transaction_type")
+        private String transactionType;
+
+
+        /**
+         *
+         * @param transactionType
+         * @param referenceId
+         */
+        public VoidTransaction(String referenceId, String transactionType) {
+            super();
+            this.referenceId = referenceId;
+            this.transactionType = transactionType;
+        }
+
+        public String getReferenceId() {
+            return referenceId;
+        }
+
+        public void setReferenceId(String referenceId) {
+            this.referenceId = referenceId;
+        }
+
+        public String getTransactionType() {
+            return transactionType;
+        }
+
+        public void setTransactionType(String transactionType) {
+            this.transactionType = transactionType;
+        }
+
     }
 
-    /**
-     *
-     * @param payment_transaction
-     */
-    public VoidTransaction(VoidTransaction__1 payment_transaction) {
-        super();
-        this.payment_transaction = payment_transaction;
-    }
-
-    public VoidTransaction__1 getPayment_transaction() {
-        return payment_transaction;
-    }
-
-    public void setPayment_transaction(VoidTransaction__1 payment_transaction) {
-        this.payment_transaction = payment_transaction;
-    }
-
-}

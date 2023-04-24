@@ -1,5 +1,6 @@
 package tests;
 import api.Payments;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.testng.annotations.BeforeClass;
 import utils.TestConfig;
 import org.testng.annotations.Test;
@@ -17,12 +18,13 @@ public class TransactionsTest extends TestConfig {
 
     @Test
     public static void validPaymentTransaction() {
-        Payments.validTransaction();
+        Payments.validPaymentTransaction("message", "Your transaction has been approved.");
     }
 
     @Test
-    public static void voidPaymentTransaction() {
-        Payments.voidTransaction("message", "Your transaction has been voided successfully");
+    public static void voidPaymentTransaction() throws JsonProcessingException {
+
+        Payments.voidPaymentTransaction("message", "Your transaction has been voided successfully");
     }
 
     @Test
@@ -31,12 +33,12 @@ public class TransactionsTest extends TestConfig {
     }
 
     @Test
-    public static void nonExistingId() {
+    public static void nonExistingId() throws JsonProcessingException {
         Payments.nonExistingId();
     }
 
     @Test
-    public void voidExistingVoidTransaction() {
+    public void voidExistingVoidTransaction() throws JsonProcessingException {
         Payments.existingVoidTransaction();
     }
 }
