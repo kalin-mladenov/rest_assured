@@ -21,7 +21,7 @@ public class Payments {
     static String paymentTransaction;
 
     /**
-     * Creates payment_transaction json object from PaymentTransaction POJO class
+     * Creates paymentTransaction json object from PaymentTransaction POJO class
      */
 
     static PaymentTransaction payment = new PaymentTransaction(
@@ -77,7 +77,7 @@ public class Payments {
     /**
      * /
      * Sends POST request to the configured endpoint with Basic authentication to make a transaction.
-     * Get the value of "unique_id" key from the json response.
+     * Get the value of "uniqueId" key from the json response.
      * Sends POST request to the configured endpoint with Basic authentication to void the transaction above.
      * Asserts the parameters json response below
      *
@@ -87,7 +87,7 @@ public class Payments {
     public static VoidResponse voidTransactionResponse() throws JsonProcessingException {
 
 
-                    uniqueId = paymentResponse().getUnique_id();
+                    uniqueId = paymentResponse().getUniqueId();
         ObjectMapper mapper = new ObjectMapper();
                    VoidTransaction voidT = new VoidTransaction(
                 uniqueId,
@@ -129,7 +129,7 @@ public class Payments {
     }
 
     /**
-     * Sends POST request to the configured endpoint with Basic authentication and blank "reference_id" key to void the transaction above.
+     * Sends POST request to the configured endpoint with Basic authentication and blank "referenceId" key to void the transaction above.
      * Expects status code 422
      */
 
@@ -154,14 +154,14 @@ public class Payments {
 
     /**
      * Sends POST request to the configured endpoint with Basic authentication to make a transaction.
-     * Get the value of "unique_id" key from the json response.
+     * Get the value of "uniqueId" key from the json response.
      * Sends POST request to the configured endpoint with Basic authentication to void the transaction above.
      * Sends again the same POST request
      * Expects status code 422
      */
     public static void existingVoidTransaction() throws JsonProcessingException {
 
-        voidUniqueId = voidTransactionResponse().getUnique_id();
+        voidUniqueId = voidTransactionResponse().getUniqueId();
         ObjectMapper mapper = new ObjectMapper();
         VoidTransaction voidT = new VoidTransaction(
                 voidUniqueId,

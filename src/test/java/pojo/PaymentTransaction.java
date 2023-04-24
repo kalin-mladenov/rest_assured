@@ -1,18 +1,27 @@
 package pojo;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRootName;
 
 @JsonRootName(value = "payment_transaction")
 public class PaymentTransaction {
-
-    private String card_number;
+    @JsonProperty("card_number")
+    private String cardNumber;
+    @JsonProperty("cvv")
     private String cvv;
-    private String expiration_date;
+    @JsonProperty("expiration_date")
+    private String expirationDate;
+    @JsonProperty("amount")
     private String amount;
+    @JsonProperty("usage")
     private String usage;
-    private String transaction_type;
-    private String card_holder;
+    @JsonProperty("transaction_type")
+    private String transactionType;
+    @JsonProperty("card_holder")
+    private String cardHolder;
+    @JsonProperty("email")
     private String email;
+    @JsonProperty("address")
     private String address;
 
     /**
@@ -24,35 +33,35 @@ public class PaymentTransaction {
 
     /**
      *
-     * @param transaction_type
+     * @param transactionType
      * @param cvv
      * @param amount
      * @param address
      * @param usage
-     * @param card_holder
-     * @param card_number
+     * @param cardHolder
+     * @param cardNumber
      * @param email
-     * @param expiration_date
+     * @param expirationDate
      */
-    public PaymentTransaction(String card_number, String cvv, String expiration_date, String amount, String usage, String transaction_type, String card_holder, String email, String address) {
+    public PaymentTransaction(String cardNumber, String cvv, String expirationDate, String amount, String usage, String transactionType, String cardHolder, String email, String address) {
         super();
-        this.card_number = card_number;
+        this.cardNumber = cardNumber;
         this.cvv = cvv;
-        this.expiration_date = expiration_date;
+        this.expirationDate = expirationDate;
         this.amount = amount;
         this.usage = usage;
-        this.transaction_type = transaction_type;
-        this.card_holder = card_holder;
+        this.transactionType = transactionType;
+        this.cardHolder = cardHolder;
         this.email = email;
         this.address = address;
     }
 
-    public String getCard_number() {
-        return card_number;
+    public String getCardNumber() {
+        return cardNumber;
     }
 
-    public void setCard_number(String card_number) {
-        this.card_number = card_number;
+    public void setCardNumber(String cardNumber) {
+        this.cardNumber = cardNumber;
     }
 
     public String getCvv() {
@@ -63,12 +72,12 @@ public class PaymentTransaction {
         this.cvv = cvv;
     }
 
-    public String getExpiration_date() {
-        return expiration_date;
+    public String getExpirationDate() {
+        return expirationDate;
     }
 
-    public void setExpiration_date(String expiration_date) {
-        this.expiration_date = expiration_date;
+    public void setExpirationDate(String expirationDate) {
+        this.expirationDate = expirationDate;
     }
 
     public String getAmount() {
@@ -87,20 +96,20 @@ public class PaymentTransaction {
         this.usage = usage;
     }
 
-    public String getTransaction_type() {
-        return transaction_type;
+    public String getTransactionType() {
+        return transactionType;
     }
 
-    public void setTransaction_type(String transaction_type) {
-        this.transaction_type = transaction_type;
+    public void setTransactionType(String transactionType) {
+        this.transactionType = transactionType;
     }
 
-    public String getCard_holder() {
-        return card_holder;
+    public String getCardHolder() {
+        return cardHolder;
     }
 
-    public void setCard_holder(String card_holder) {
-        this.card_holder = card_holder;
+    public void setCardHolder(String cardHolder) {
+        this.cardHolder = cardHolder;
     }
 
     public String getEmail() {
