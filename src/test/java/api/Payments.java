@@ -9,7 +9,6 @@ import pojo.PaymentTransaction;
 import pojo.VoidResponse;
 import pojo.VoidTransaction;
 import utils.ConfigFile;
-
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.equalTo;
 
@@ -38,8 +37,6 @@ public class Payments {
             "Panda Street, China"
     );
     static ObjectMapper mapper = new ObjectMapper();
-
-
     static {
         try {
             paymentTransaction = mapper.enable(SerializationFeature.WRAP_ROOT_VALUE).writeValueAsString(payment);
@@ -53,11 +50,9 @@ public class Payments {
      * Sends POST request to the configured endpoint with Basic authentication and returns the response.
      */
     public static PaymentResponse paymentResponse() {
-
-
         Response response =
                 given()
-                        .auth().basic(user, pass)
+                        .auth().preemptive().basic(user, pass)
                         .body(paymentTransaction)
                         .when()
                         .post(endpoint);
@@ -73,7 +68,9 @@ public class Payments {
      */
     public static void validPaymentTransaction(String key, String value) {
         paymentResponse();
-        given().then().body(key, equalTo(value));
+        given()
+                .then()
+                .body(key, equalTo(value));
     }
 
     /**
@@ -88,14 +85,14 @@ public class Payments {
         uniqueId = paymentResponse().getUniqueId();
         ObjectMapper mapper = new ObjectMapper();
         VoidTransaction voidT = new VoidTransaction(
-                uniqueId,
+                             uniqueId,
                 "void");
 
         String voidTransaction;
         voidTransaction = mapper.enable(SerializationFeature.WRAP_ROOT_VALUE).writeValueAsString(voidT);
         Response response =
                 given()
-                        .auth().basic(user, pass)
+                        .auth().preemptive().basic(user, pass)
                         .body(voidTransaction)
                         .when()
                         .post(endpoint);
@@ -114,7 +111,8 @@ public class Payments {
     public static void voidPaymentTransaction(String key, String value) throws JsonProcessingException {
         voidTransactionResponse();
         given()
-                .then().body(key, equalTo(value));
+                .then()
+                .body(key, equalTo(value));
     }
 
     /**
@@ -123,7 +121,7 @@ public class Payments {
      */
     public static void invalidAuthentication() {
         given()
-                .auth().basic(user, "")
+                .auth().preemptive().basic(user, "")
                 .body(paymentTransaction)
                 .when()
                 .post(endpoint)
@@ -147,7 +145,7 @@ public class Payments {
         nonExistingId = mapper.enable(SerializationFeature.WRAP_ROOT_VALUE).writeValueAsString(voidT);
 
         given()
-                .auth().basic(user, pass)
+                .auth().preemptive().basic(user, pass)
                 .body(nonExistingId)
                 .when()
                 .post(endpoint)
@@ -173,13 +171,11 @@ public class Payments {
         voidTransaction = mapper.enable(SerializationFeature.WRAP_ROOT_VALUE).writeValueAsString(voidT);
 
         given()
-                .auth().basic(user, pass)
+                .auth().preemptive().basic(user, pass)
                 .body(voidTransaction)
                 .when()
                 .post(endpoint)
-
                 .then()
-
                 .assertThat().statusCode(422);
     }
 }
