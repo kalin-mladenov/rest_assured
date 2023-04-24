@@ -18,7 +18,7 @@ public class TransactionsTest extends TestConfig {
 
     @Test
     public static void validPaymentTransaction() {
-        Payments.validPaymentTransaction();
+        Payments.validPaymentTransaction("message", "Your transaction has been approved.");
     }
 
     @Test
